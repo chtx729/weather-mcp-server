@@ -6,8 +6,10 @@
 
 - [ ] `vercel.json` - Vercel 配置文件
 - [ ] `package.json` - 项目配置和依赖
+- [ ] `build.cjs` - 构建脚本文件
 - [ ] `api/index.js` - Serverless Function 入口
 - [ ] `.vercelignore` - 忽略不必要的文件
+- [ ] `src/index.js` - 源代码入口文件
 - [ ] `dist/index.cjs` - 构建输出文件（运行 `npm run build` 生成）
 
 ### ✅ 配置验证
@@ -48,12 +50,19 @@
 ```json
 {
   "scripts": {
-    "build": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node22 --outfile=dist/index.cjs && npm run build:vercel",
-    "build:vercel": "node -e \"const fs=require('fs'); const path=require('path'); if(!fs.existsSync('api')) fs.mkdirSync('api', {recursive: true}); if(fs.existsSync('dist/index.cjs')) fs.copyFileSync('dist/index.cjs', 'api/mcp-server.cjs');\"",
+    "build": "node build.cjs",
+    "build:legacy": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node18 --outfile=dist/index.cjs",
     "vercel-build": "npm run build"
   }
 }
 ```
+
+#### 构建脚本文件 (build.cjs)
+- 自动检查源文件存在性
+- 创建必要的输出目录
+- 使用 esbuild 进行打包
+- 复制文件到 API 目录
+- 提供详细的构建日志
 
 ### ✅ 环境变量
 
@@ -87,21 +96,36 @@ npm start
 1. 运行修复脚本: `./fix-vercel-deployment.ps1`
 2. 或手动确保 `vercel.json` 包含 `"outputDirectory": "."`
 
-### 问题 2: 构建失败
+### 问题 2: esbuild 无法解析 "src/index.js"
+
+**错误信息**: `Could not resolve "src/index.js"`
+
+**原因**: 
+- 项目使用 ES 模块 (`"type": "module"`)
+- 构建脚本路径解析问题
+- 缺少构建脚本文件
+
+**解决方案**:
+1. 确保 `build.cjs` 文件存在
+2. 使用新的构建脚本: `"build": "node build.cjs"`
+3. 验证源文件路径正确
+
+### 问题 3: 构建失败
 
 **检查步骤**:
 1. 验证 Node.js 版本 (>=18.0.0)
 2. 清理并重新安装依赖: `rm -rf node_modules package-lock.json && npm install`
 3. 检查 `package.json` 语法
+4. 确保 `build.cjs` 构建脚本存在
 
-### 问题 3: Function 超时
+### 问题 4: Function 超时
 
 **解决方案**:
 1. 在 `vercel.json` 中增加 `maxDuration`
 2. 优化 API 调用性能
 3. 添加错误处理和重试机制
 
-### 问题 4: 环境变量未生效
+### 问题 5: 环境变量未生效
 
 **检查步骤**:
 1. Vercel 项目设置 → Environment Variables

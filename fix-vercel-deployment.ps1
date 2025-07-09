@@ -109,8 +109,16 @@ src/
     Write-Host "✓ .vercelignore 文件已存在" -ForegroundColor Green
 }
 
-# 6. 测试构建
-Write-Host "\n6. 测试构建过程..." -ForegroundColor Cyan
+# 6. 检查构建脚本
+Write-Host "\n6. 检查构建脚本..." -ForegroundColor Cyan
+if (Test-Path "build.cjs") {
+    Write-Host "✓ build.cjs 构建脚本存在" -ForegroundColor Green
+} else {
+    Write-Host "⚠ build.cjs 构建脚本不存在，可能需要创建" -ForegroundColor Yellow
+}
+
+# 7. 测试构建
+Write-Host "\n7. 测试构建过程..." -ForegroundColor Cyan
 Write-Host "运行 npm install..." -ForegroundColor Yellow
 try {
     npm install
@@ -126,12 +134,15 @@ try {
     Write-Host "✓ 构建成功" -ForegroundColor Green
 } catch {
     Write-Host "✗ 构建失败" -ForegroundColor Red
-    Write-Host "请检查构建错误信息" -ForegroundColor Yellow
+    Write-Host "常见构建问题：" -ForegroundColor Yellow
+    Write-Host "1. esbuild 无法解析 src/index.js - 检查文件是否存在" -ForegroundColor Gray
+    Write-Host "2. ES 模块语法错误 - 确保构建脚本使用 .cjs 扩展名" -ForegroundColor Gray
+    Write-Host "3. 依赖缺失 - 运行 npm install" -ForegroundColor Gray
     exit 1
 }
 
-# 7. 检查构建输出
-Write-Host "\n7. 检查构建输出..." -ForegroundColor Cyan
+# 8. 检查构建输出
+Write-Host "\n8. 检查构建输出..." -ForegroundColor Cyan
 if (Test-Path "dist/index.cjs") {
     Write-Host "✓ dist/index.cjs 已生成" -ForegroundColor Green
 } else {
@@ -144,8 +155,8 @@ if (Test-Path "api/mcp-server.cjs") {
     Write-Host "✗ api/mcp-server.cjs 未生成" -ForegroundColor Red
 }
 
-# 8. 环境变量检查
-Write-Host "\n8. 环境变量检查..." -ForegroundColor Cyan
+# 9. 环境变量检查
+Write-Host "\n9. 环境变量检查..." -ForegroundColor Cyan
 if (Test-Path ".env") {
     Write-Host "✓ .env 文件存在" -ForegroundColor Green
     $envContent = Get-Content ".env"

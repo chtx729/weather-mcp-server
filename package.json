@@ -15,8 +15,8 @@
   "scripts": {
     "start": "node dist/index.cjs",
     "dev": "npm run build && npx -y @modelcontextprotocol/inspector npm run start",
-    "build": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node22 --outfile=dist/index.cjs && npm run build:vercel",
-    "build:vercel": "node -e \"const fs=require('fs'); const path=require('path'); if(!fs.existsSync('api')) fs.mkdirSync('api', {recursive: true}); if(fs.existsSync('dist/index.cjs')) fs.copyFileSync('dist/index.cjs', 'api/mcp-server.cjs');\"",
+    "build": "node build.cjs",
+    "build:legacy": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node18 --outfile=dist/index.cjs",
     "test": "node src/test.js",
     "vercel-build": "npm run build",
     "prepublishOnly": "npm run build"

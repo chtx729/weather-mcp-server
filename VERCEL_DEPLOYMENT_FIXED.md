@@ -14,9 +14,12 @@
 - **问题**：第15行 `src/` 被忽略
 - **修复**：注释掉该行，保留源文件用于构建
 
-### 2. 简化 API 结构
-- **创建**：`api/index.cjs` - CommonJS 版本的主要 API 处理器
-- **创建**：`api/index.js` - ES 模块包装器，导入 CommonJS 版本
+### 2. 解决文件路径冲突
+- **问题**：`api/index.js` 和 `api/index.cjs` 产生路径冲突
+- **修复**：只保留 `api/index.js`，使用 ES 模块语法
+
+### 3. 简化 API 结构
+- **创建**：`api/index.js` - ES 模块版本的 API 处理器
 - **简化**：直接在 API 文件中包含天气 API 逻辑，避免复杂的模块依赖
 
 ### 3. 优化构建脚本
@@ -32,9 +35,8 @@
 
 ```
 ├── api/
-│   ├── index.js          # ES 模块包装器（Vercel 入口点）
-│   ├── index.cjs         # CommonJS API 处理器
-│   └── weather.js        # 备用天气 API 端点
+│   ├── index.js          # ES 模块 API 处理器（Vercel 入口点）
+│   └── mcp-server.cjs    # 构建后的 MCP Server（可选）
 ├── src/                  # 源文件（现在不被忽略）
 │   ├── index.js
 │   ├── tools.js

@@ -1,22 +1,24 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "dist/index.cjs",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
+      "source": "/",
+      "destination": "/api/index"
+    },
     {
-      "src": "/(.*)",
-      "dest": "/dist/index.cjs"
+      "source": "/weather",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/weather",
+      "destination": "/api/index"
     }
   ],
   "env": {
     "NODE_ENV": "production"
   },
   "functions": {
-    "dist/index.cjs": {
+    "api/index.js": {
       "maxDuration": 30
     }
   }

@@ -10,11 +10,11 @@
     },
     {
       "source": "/weather",
-      "destination": "/api/index"
+      "destination": "/api/weather"
     },
     {
       "source": "/api/weather",
-      "destination": "/api/index"
+      "destination": "/api/weather"
     }
   ],
   "env": {

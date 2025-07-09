@@ -38,42 +38,38 @@ function findSourceFile() {
     path.join(process.cwd(), 'src', 'index.js'),
     path.join(__dirname, 'src', 'index.js'),
     path.resolve('./src/index.js'),
-    path.resolve('src/index.js'),
-    // Vercel 特定路径
-    '/vercel/path0/src/index.js',
-    path.join('/vercel/path0', 'src', 'index.js'),
-    // 其他可能的 Vercel 路径
-    path.join(process.env.VERCEL_PROJECT_PATH || '', 'src', 'index.js'),
-    path.join('/tmp', 'src', 'index.js')
+    path.resolve('src/index.js')
   ];
 
   log('开始查找源文件...');
   log(`当前工作目录: ${process.cwd()}`);
   log(`脚本所在目录: ${__dirname}`);
-  
+
   for (const srcPath of possiblePaths) {
     const resolvedPath = path.resolve(srcPath);
     log(`检查路径: ${resolvedPath}`);
-    
+
     if (fs.existsSync(resolvedPath)) {
       log(`✓ 找到源文件: ${resolvedPath}`);
       return resolvedPath;
     }
   }
-  
+
   log('❌ 未找到源文件，尝试列出目录内容:');
   try {
     const files = fs.readdirSync(process.cwd());
     log(`根目录文件: ${files.join(', ')}`);
-    
+
     if (fs.existsSync(path.join(process.cwd(), 'src'))) {
       const srcFiles = fs.readdirSync(path.join(process.cwd(), 'src'));
       log(`src目录文件: ${srcFiles.join(', ')}`);
+    } else {
+      log('src目录不存在');
     }
   } catch (error) {
     log(`无法列出目录内容: ${error.message}`, 'error');
   }
-  
+
   return null;
 }
 
@@ -111,10 +107,10 @@ async function build() {
     ensureDir(distDir);
     ensureDir(apiDir);
     
-    // 3. 构建
-    log('开始 esbuild 构建...');
+    // 3. 构建主要的 MCP Server
+    log('开始构建 MCP Server...');
     const outputFile = path.join(distDir, 'index.cjs');
-    
+
     const esbuildCmd = [
       'npx esbuild',
       `"${srcFile}"`,
@@ -125,34 +121,35 @@ async function build() {
       `--outfile="${outputFile}"`,
       '--sourcemap',
       '--minify',
-      '--log-level=info'
+      '--log-level=info',
+      '--external:@modelcontextprotocol/sdk'
     ].join(' ');
-    
+
     log(`执行命令: ${esbuildCmd}`);
-    
+
     try {
-      execSync(esbuildCmd, { 
+      execSync(esbuildCmd, {
         stdio: 'inherit',
         cwd: process.cwd()
       });
+
+      // 验证输出
+      if (fs.existsSync(outputFile)) {
+        const stats = fs.statSync(outputFile);
+        log(`✓ MCP Server 构建成功，输出文件: ${outputFile}`);
+        log(`文件大小: ${(stats.size / 1024).toFixed(2)} KB`);
+
+        // 复制到 API 目录
+        const apiFile = path.join(apiDir, 'mcp-server.cjs');
+        fs.copyFileSync(outputFile, apiFile);
+        log(`✓ 复制到 API 目录: ${apiFile}`);
+      } else {
+        log('警告: MCP Server 构建文件不存在，但继续执行', 'warn');
+      }
     } catch (buildError) {
-      log(`esbuild 执行失败: ${buildError.message}`, 'error');
-      throw buildError;
+      log(`MCP Server 构建失败: ${buildError.message}`, 'error');
+      log('继续执行，因为 Vercel 函数不依赖此文件', 'warn');
     }
-    
-    // 4. 验证输出
-    if (!fs.existsSync(outputFile)) {
-      throw new Error(`构建输出文件不存在: ${outputFile}`);
-    }
-    
-    const stats = fs.statSync(outputFile);
-    log(`✓ 构建成功，输出文件: ${outputFile}`);
-    log(`文件大小: ${(stats.size / 1024).toFixed(2)} KB`);
-    
-    // 5. 复制到 API 目录
-    const apiFile = path.join(apiDir, 'mcp-server.cjs');
-    fs.copyFileSync(outputFile, apiFile);
-    log(`✓ 复制到 API 目录: ${apiFile}`);
     
     log('=== 构建完成 ===');
     

@@ -12,7 +12,7 @@ yarn-error.log*
 .env.production.local
 
 # Build outputs (keep only what's needed)
-src/
+# src/ - 需要保留源文件用于构建
 
 # IDE files
 .vscode/

@@ -1,0 +1,64 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs (keep only what's needed)
+src/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Documentation (not needed for deployment)
+*.md
+!README.md
+
+# Scripts
+*.ps1
+setup.ps1
+deploy.ps1
+
+# Git
+.git/
+.gitignore
+
+# Package files
+package-lock.json
+yarn.lock
+
+# Test files
+*.test.js
+test.js
+
+# Development files
+.github/
+天气预报MCP_Server开发指南.md
+MCP_Server_开发指南.md
+快速开始.md
+DEPLOYMENT.md
+API_USAGE.md

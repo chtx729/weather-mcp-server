@@ -174,6 +174,39 @@ npm run dev
 
 ## 故障排除
 
+### Vercel 部署问题
+
+#### 常见 Vercel 部署问题
+
+**问题："No Output Directory named 'public' found"**
+
+这是最常见的 Vercel 部署错误。解决方案：
+
+1. **运行修复脚本**（推荐）：
+   ```bash
+   .\fix-vercel-deployment.ps1
+   ```
+
+2. **手动修复**：
+   - 确保 `vercel.json` 包含正确配置
+   - 检查 `package.json` 构建脚本
+   - 创建 `.vercelignore` 文件
+
+#### 快速诊断
+
+```bash
+# 检查构建
+npm run build
+
+# 检查文件结构
+ls api/
+ls dist/
+
+# 验证配置文件
+cat vercel.json
+cat package.json
+```
+
 ### 常见问题
 
 1. **API密钥错误**

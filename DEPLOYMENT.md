@@ -196,20 +196,41 @@ npm install -g weather-mcp-server
 
 ### 常见问题
 
-1. **构建失败**
+1. **Vercel 部署错误："No Output Directory named 'public' found"**
+   
+   **问题原因**：Vercel 默认期望静态网站项目有 `public` 目录
+   
+   **解决方案**：
+   - 确保 `vercel.json` 包含正确的配置：
+   ```json
+   {
+     "version": 2,
+     "buildCommand": "npm run build",
+     "outputDirectory": ".",
+     "installCommand": "npm install"
+   }
+   ```
+   - 创建 `.vercelignore` 文件排除不必要的文件
+   - 确保 `package.json` 中的 `vercel-build` 脚本正确
+
+2. **构建失败**
    - 检查 Node.js 版本（需要 18.x 或更高）
    - 确保所有依赖已正确安装
    - 检查环境变量配置
 
-2. **部署失败**
+3. **部署失败**
    - 验证 `vercel.json` 配置
    - 检查环境变量是否正确设置
    - 查看 Vercel 部署日志
 
-3. **API 调用失败**
+4. **API 调用失败**
    - 验证 `OPENWEATHER_API_KEY` 是否有效
    - 检查网络连接
    - 查看服务器错误日志
+
+5. **Vercel Functions 超时**
+   - 检查 `vercel.json` 中的 `maxDuration` 设置
+   - 优化 API 调用性能
 
 ### 调试技巧
 

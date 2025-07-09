@@ -18,7 +18,7 @@
     "build": "node build.cjs",
     "build:legacy": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node18 --outfile=dist/index.cjs",
     "test": "node src/test.js",
-    "vercel-build": "npm run build",
+    "vercel-build": "node build-vercel.cjs",
     "prepublishOnly": "npm run build"
    },
    "dependencies": {

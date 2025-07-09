@@ -38,14 +38,17 @@ function ensureDir(dirPath) {
 /**
  * 检查文件是否存在
  * @param {string} filePath - 文件路径
+ * @param {boolean} silent - 是否静默检查（不输出日志）
  * @returns {boolean} 文件是否存在
  */
-function checkFile(filePath) {
+function checkFile(filePath, silent = false) {
   const exists = fs.existsSync(filePath);
-  if (exists) {
-    log(`✓ 文件存在: ${filePath}`, 'success');
-  } else {
-    log(`✗ 文件不存在: ${filePath}`, 'error');
+  if (!silent) {
+    if (exists) {
+      log(`✓ 文件存在: ${filePath}`, 'success');
+    } else {
+      log(`✗ 文件不存在: ${filePath}`, 'error');
+    }
   }
   return exists;
 }
@@ -56,12 +59,41 @@ function checkFile(filePath) {
 async function build() {
   try {
     log('开始构建天气预报 MCP Server...', 'info');
+    log(`当前工作目录: ${process.cwd()}`, 'info');
+    log(`脚本目录: ${__dirname}`, 'info');
     
-    // 1. 检查源文件
+    // 检测是否在 Vercel 环境
+    const isVercel = process.env.VERCEL || process.env.NOW_REGION || process.cwd().includes('/vercel/');
+    if (isVercel) {
+      log('检测到 Vercel 环境', 'info');
+    }
+    
+    // 1. 检查源文件 - 尝试多个可能的路径
     log('检查源文件...', 'info');
-    const srcFile = path.join(process.cwd(), 'src', 'index.js');
-    if (!checkFile(srcFile)) {
-      throw new Error(`源文件不存在: ${srcFile}`);
+    const possibleSrcPaths = [
+      path.join(process.cwd(), 'src', 'index.js'),
+      path.join(__dirname, 'src', 'index.js'),
+      path.resolve('./src/index.js'),
+      path.resolve('src/index.js'),
+      // Vercel 特殊路径
+      path.join('/vercel/path0', 'src', 'index.js')
+    ];
+    
+    let srcFile = null;
+    for (const srcPath of possibleSrcPaths) {
+      const resolvedPath = path.resolve(srcPath);
+      log(`尝试路径: ${resolvedPath}`, 'info');
+      if (checkFile(resolvedPath, true)) {
+        srcFile = resolvedPath;
+        log(`✓ 找到源文件: ${srcFile}`, 'success');
+        break;
+      }
+    }
+    
+    if (!srcFile) {
+      log('所有可能的源文件路径:', 'error');
+      possibleSrcPaths.forEach(p => log(`  - ${path.resolve(p)}`, 'error'));
+      throw new Error('无法找到源文件 src/index.js');
     }
     
     // 2. 创建输出目录

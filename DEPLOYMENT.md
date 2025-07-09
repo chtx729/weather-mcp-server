@@ -213,22 +213,34 @@ npm install -g weather-mcp-server
    - 创建 `.vercelignore` 文件排除不必要的文件
    - 确保 `package.json` 中的 `vercel-build` 脚本正确
 
-2. **构建失败**
+2. **esbuild 无法解析源文件**
+   
+   **错误信息**: `源文件不存在: /vercel/path0/src/index.js`
+   
+   **解决方案**:
+   - 使用 Vercel 专用构建脚本 `build-vercel.cjs`
+   - 更新 `vercel.json` 中的 `buildCommand` 为 `node build-vercel.cjs`
+   - 确保 `build-vercel.cjs` 文件存在并包含路径检测逻辑
+
+3. **构建失败**
+   - 检查 `build.cjs` 和 `build-vercel.cjs` 文件是否存在
+   - 确保 `src/index.js` 文件路径正确
+   - 验证 `esbuild` 依赖已安装
    - 检查 Node.js 版本（需要 18.x 或更高）
    - 确保所有依赖已正确安装
    - 检查环境变量配置
 
-3. **部署失败**
+4. **部署失败**
    - 验证 `vercel.json` 配置
    - 检查环境变量是否正确设置
    - 查看 Vercel 部署日志
 
-4. **API 调用失败**
+5. **API 调用失败**
    - 验证 `OPENWEATHER_API_KEY` 是否有效
    - 检查网络连接
    - 查看服务器错误日志
 
-5. **Vercel Functions 超时**
+6. **Vercel Functions 超时**
    - 检查 `vercel.json` 中的 `maxDuration` 设置
    - 优化 API 调用性能
 

@@ -6,7 +6,8 @@
 
 - [ ] `vercel.json` - Vercel 配置文件
 - [ ] `package.json` - 项目配置和依赖
-- [ ] `build.cjs` - 构建脚本文件
+- [ ] `build.cjs` - 通用构建脚本文件
+- [ ] `build-vercel.cjs` - Vercel 专用构建脚本（推荐）
 - [ ] `api/index.js` - Serverless Function 入口
 - [ ] `.vercelignore` - 忽略不必要的文件
 - [ ] `src/index.js` - 源代码入口文件
@@ -18,7 +19,7 @@
 ```json
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "node build-vercel.cjs",
   "outputDirectory": ".",
   "installCommand": "npm install",
   "rewrites": [
@@ -46,23 +47,33 @@
 }
 ```
 
+> **注意**: `buildCommand` 现在使用 `node build-vercel.cjs` 而不是 `npm run build`，这样可以直接使用 Vercel 专用构建脚本，避免 npm 脚本可能带来的路径问题。
+
 #### package.json 脚本
 ```json
 {
   "scripts": {
     "build": "node build.cjs",
     "build:legacy": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node18 --outfile=dist/index.cjs",
-    "vercel-build": "npm run build"
+    "vercel-build": "node build-vercel.cjs"
   }
 }
 ```
 
-#### 构建脚本文件 (build.cjs)
-- 自动检查源文件存在性
-- 创建必要的输出目录
-- 使用 esbuild 进行打包
-- 复制文件到 API 目录
-- 提供详细的构建日志
+> **重要**: `vercel-build` 脚本现在直接使用 `node build-vercel.cjs`，与 `vercel.json` 中的 `buildCommand` 保持一致，确保构建行为的统一性。
+
+#### 构建脚本
+
+**`build.cjs` - 通用构建脚本**
+- 适用于本地开发和一般部署环境
+- 包含基本的构建功能和错误处理
+
+**`build-vercel.cjs` - Vercel 专用构建脚本（推荐）**
+- 专门针对 Vercel 环境优化
+- 包含 Vercel 环境检测和特殊路径处理
+- 提供详细的调试信息和环境诊断
+- 更好的错误处理和日志输出
+- 自动检查源文件的多个可能位置
 
 ### ✅ 环境变量
 
@@ -147,6 +158,12 @@ npm start
    - 连接 GitHub 仓库
    - 自动检测配置
    - 开始构建和部署
+
+3. **清除 Vercel 缓存（重要）**:
+   - 如果之前部署过，需要清除缓存
+   - 在 Vercel 项目设置中，找到 "Functions" 或 "Build & Development Settings"
+   - 点击 "Clear Cache" 或重新触发部署
+   - 确保使用最新的构建配置
 
 ### 手动部署
 

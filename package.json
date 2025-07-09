@@ -1,0 +1,57 @@
+{
+  "name": "weather-mcp-server",
+  "version": "1.0.0",
+  "description": "天气预报 MCP Server",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "files": [
+    "bin",
+    "dist",
+    "config"
+  ],
+  "bin": {
+    "weather-mcp-server": "bin/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.cjs",
+    "dev": "npm run build && npx -y @modelcontextprotocol/inspector npm run start",
+    "build": "esbuild src/index.js --bundle --format=cjs --platform=node --target=node22 --outfile=dist/index.cjs",
+    "test": "node src/test.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "axios": "^1.6.0",
+    "zod": "^3.24.2",
+    "zod-to-json-schema": "^3.24.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "22",
+    "esbuild": "^0.25.0"
+  },
+  "keywords": [
+    "mcp",
+    "weather",
+    "forecast",
+    "api",
+    "openweathermap",
+    "model-context-protocol",
+    "cursor",
+    "claude",
+    "trae-ai"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/weather-mcp-server.git"
+  },
+  "homepage": "https://github.com/your-username/weather-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/your-username/weather-mcp-server/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

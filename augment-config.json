@@ -1,0 +1,12 @@
+{
+  "mcp": {
+    "servers": {
+      "weather": {
+        "url": "https://weather-mcp-server-theta.vercel.app/api",
+        "env": {
+          "OPENWEATHER_API_KEY": "14eab3647afc9e18968b66b604a46b97"
+        }
+      }
+    }
+  }
+}

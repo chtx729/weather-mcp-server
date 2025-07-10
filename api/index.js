@@ -257,3 +257,4 @@ export default async function handler(req, res) {
     message: 'Only GET and POST requests are supported'
   });
 }
+

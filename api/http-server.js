@@ -1,4 +1,4 @@
-import { McpServer, HttpServerTransport } from '@mcp/server';
+import { McpServer, HttpServerTransport, SseServerTransport } from '@mcp/server';
 import { registerWeatherTools } from '../src/tools.js';
 import { validateConfig } from '../src/utils.js';
 
@@ -44,11 +44,23 @@ export default async function createHttpServer(req, res) {
     // 注册天气工具
     registerWeatherTools(server);
 
-    // 创建 HTTP 传输
-    const transport = new HttpServerTransport({ req, res });
-    
-    // 处理请求
-    await server.handleRequest(transport);
+    // 检测是否是 SSE 请求
+    const isSSE = req.headers.accept && req.headers.accept.includes('text/event-stream');
+
+    if (isSSE) {
+      // 设置 SSE 头
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      
+      // 创建 SSE 传输
+      const transport = new SseServerTransport({ req, res });
+      await server.connect(transport);
+    } else {
+      // 普通 HTTP 处理
+      const transport = new HttpServerTransport({ req, res });
+      await server.handleRequest(transport);
+    }
   } catch (error) {
     console.error('[HTTP 处理错误]:', error);
     return res.status(500).json({
